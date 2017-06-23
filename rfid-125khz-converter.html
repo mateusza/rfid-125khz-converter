@@ -1,0 +1,195 @@
+<!doctype html>
+
+<html>
+<head>
+<meta charset=UTF-8>
+<title>RFID 125kHz reader</title>
+<style>
+
+body {
+    background-color: #eee;
+    margin: auto;
+}
+body, html {
+    height: 90%;
+}
+div#b {
+    text-align: center;
+    width: 80%;
+    margin: 30px auto;
+}
+
+pre#o {
+    font-size: 20pt;
+    color: #9b9;
+    text-shadow: #fff 0 0 3px, #fff 2px 2px 4px;
+}
+
+pre#o.ready {
+    color: #232;
+}
+
+input#i {
+    font-size: 40pt;
+    padding: 16px;
+    border-radius: 6px;
+    margin: auto;
+    background-color: #232;
+    color: #343;
+    text-align: right;
+    border: 0;
+    transition-duration: 0.2s;
+    font-family: monospace;
+    text-shadow: #111 0 0 3px, #111 2px 2px 4px;
+}
+
+div#buttons {
+    margin-top: 8px;
+}
+
+button#bh, button#bd {
+    padding: 8px;
+    border-radius: 5px;
+    border: 0;
+    background-color: #797;
+    color: #aba;
+    font-size: 20pt;
+    font-weight: bold;
+}
+
+body.dec button#bd,
+body.hex button#bh {
+    background-color: #8f8;
+    color: #dfd;
+    text-shadow: #454 0 0 3px, #454 2px 2px 4px;
+}
+
+input#i::selection {
+    background-color: #585;
+    color: #fff;
+}
+
+input#i:focus {
+    color: #f8f8f8;
+    background-color: #797;
+    text-shadow: #666 0 0 3px, #666 2px 2px 4px;
+    border: 0;
+    outline: none;
+}
+
+input#i.blank {
+    background-color: #ada;
+    color: #fff;
+    transition-duration: 0.1s;
+}
+
+</style>
+<script>
+
+function init(){
+    set_base( 10 )
+    document.querySelector('#bd').addEventListener( 'click', function(){
+        set_base(10)
+        update()
+    })
+    document.querySelector('#bh').addEventListener( 'click', function(){
+        set_base(16)
+        update()
+    })
+
+    var i = document.querySelector( "input#i" )
+    i.addEventListener( 'keydown', function(e){
+        if ( e.keyCode == 72 ){
+            set_base( 10 )
+            e.preventDefault()
+            return false
+        }
+        if ( e.keyCode == 88 ){
+            set_base( 16 )
+            e.preventDefault()
+            return false
+        }
+
+    })
+    i.addEventListener( 'keyup', function(e){
+        update( i.value )
+        if ( e.keyCode == 13 ){
+            document.querySelector("input#i").value = ""
+            document.querySelector("pre#o").className = "ready"
+            document.querySelector("input#i").className = "blank"
+            window.setTimeout( function(){
+                document.querySelector("input#i").className = ""
+            }, 90 )
+        }
+    })
+    i.focus()
+
+    var b = document.querySelector( "body" )
+    b.addEventListener( 'click', function(){
+        i.focus()
+    })
+}
+
+function set_base( n ){
+    base = n
+    if ( base == 10 ){
+       document.querySelector("body").className = "dec"
+    }
+    if ( base == 16 ){
+       document.querySelector("body").className = "hex"
+    }
+}
+
+function update(){
+    var val = i.value
+
+    if ( ! (
+        ( base == 10 && val.match( /^[0-9]*$/ ) )
+        ||
+        ( base == 16 && val.match( /^[0-9a-fA-F]*$/ ) )
+        
+        ) ) 
+    {
+        document.querySelector("input#i").value = ""
+        document.querySelector("pre#o").textContent = "ERROR"
+        return
+    }
+
+    document.querySelector("pre#o").className = ""
+
+    if ( base == 10 ){
+        decimal = parseInt( '0' + i.value );
+        hex = parseInt( '0' + i.value, 10 ).toString( 16 );
+    }
+    if ( base == 16 ){
+        hex = parseInt( '0' + i.value, 16 ).toString(16);
+        decimal = parseInt( '0' + i.value, 16 ).toString( 10 );
+    }
+    hextail = ('00000' + hex).slice(-4)
+
+    document.querySelector("pre#o").textContent = [
+        "wartosc: ", decimal, "\n",
+        "hex: ", hex, "\n",
+        "hex: ", hextail, "\n",
+        "końcówka: ", parseInt( hextail, 16)
+    ].join('')
+
+}
+
+window.onload = init
+
+</script>
+</head>
+<body>
+<div id=b>
+<input id="i" autocomplete=off>
+<div id='buttons'>
+<button id="bh">HEX</button>
+<button id="bd">DEC</button>
+</div>
+<pre id=o>
+
+</pre>
+</div>
+</body>
+</html>
