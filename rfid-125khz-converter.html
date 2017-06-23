@@ -49,7 +49,7 @@ div#buttons {
     margin-top: 8px;
 }
 
-button#bh, button#bd {
+button#bh, button#bd, button#bs {
     padding: 8px;
     border-radius: 5px;
     border: 0;
@@ -60,7 +60,8 @@ button#bh, button#bd {
 }
 
 body.dec button#bd,
-body.hex button#bh {
+body.hex button#bh,
+body.shortdec button#bs {
     background-color: #8f8;
     color: #dfd;
     text-shadow: #454 0 0 3px, #454 2px 2px 4px;
@@ -89,29 +90,37 @@ input#i.blank {
 <script>
 
 function init(){
-    set_base( 10 )
+    set_mode( 'dec' )
     document.querySelector('#bd').addEventListener( 'click', function(){
-        set_base(10)
+        set_mode('dec')
         update()
     })
     document.querySelector('#bh').addEventListener( 'click', function(){
-        set_base(16)
+        set_mode('hex')
+        update()
+    })
+    document.querySelector('#bs').addEventListener( 'click', function(){
+        set_mode('shortdec')
         update()
     })
 
     var i = document.querySelector( "input#i" )
     i.addEventListener( 'keydown', function(e){
-        if ( e.keyCode == 72 ){
-            set_base( 10 )
+        if ( e.keyCode == 90 ){
+            set_mode( 'dec' )
             e.preventDefault()
             return false
         }
         if ( e.keyCode == 88 ){
-            set_base( 16 )
+            set_mode( 'hex' )
             e.preventDefault()
             return false
         }
-
+        if ( e.keyCode == 83 ){
+            set_mode( 'shortdec' )
+            e.preventDefault()
+            return false
+        }
     })
     i.addEventListener( 'keyup', function(e){
         update( i.value )
@@ -133,24 +142,20 @@ function init(){
     })
 }
 
-function set_base( n ){
-    base = n
-    if ( base == 10 ){
-       document.querySelector("body").className = "dec"
-    }
-    if ( base == 16 ){
-       document.querySelector("body").className = "hex"
-    }
+function set_mode( n ){
+    mode = n
+    document.querySelector("body").className = n
 }
 
 function update(){
     var val = i.value
 
     if ( ! (
-        ( base == 10 && val.match( /^[0-9]*$/ ) )
+        ( mode == 'dec' && val.match( /^[0-9]*$/ ) )
         ||
-        ( base == 16 && val.match( /^[0-9a-fA-F]*$/ ) )
-        
+        ( mode == 'hex' && val.match( /^[0-9a-fA-F]*$/ ) )
+        ||
+        ( mode == 'shortdec' && val.match( /^[0-9]* ?[0-9]*$/ ) )
         ) ) 
     {
         document.querySelector("input#i").value = ""
@@ -160,21 +165,36 @@ function update(){
 
     document.querySelector("pre#o").className = ""
 
-    if ( base == 10 ){
+    if ( mode == 'dec' ){
         decimal = parseInt( '0' + i.value );
         hex = parseInt( '0' + i.value, 10 ).toString( 16 );
     }
-    if ( base == 16 ){
+    if ( mode == 'hex' ){
         hex = parseInt( '0' + i.value, 16 ).toString(16);
         decimal = parseInt( '0' + i.value, 16 ).toString( 10 );
     }
-    hextail = ('00000' + hex).slice(-4)
+    if ( mode == 'shortdec' ){
+        nums = ( i.value + ' ').split(' ')
+        upper = parseInt( '0' + nums[0] )
+        lower = parseInt( '0' + nums[1] )
+        decimal = 0x10000 * upper + lower
+        hex = decimal.toString( 16 )
+    }
+    overflow = ( decimal > 0xffffffff )
+    decimal = decimal % 0x100000000
+    upper = ~~(decimal / 0x10000)
+    lower = decimal % 0x10000
+//    hextail = (hex).slice(-4)
 
     document.querySelector("pre#o").textContent = [
-        "wartosc: ", decimal, "\n",
-        "hex: ", hex, "\n",
-        "hex: ", hextail, "\n",
-        "końcówka: ", parseInt( hextail, 16)
+        "decimal: ", 
+            ( '0000000000' + decimal ).slice(-10),
+            (overflow ? " OVERFLOW" : "" ), "\n",
+        "hex: ",
+            ( '00000000' + hex ).slice(-8), "\n",
+        "short decimal: ",
+            ('0' + upper ).slice(-5), " ",
+            ( '00000' + lower ).slice(-5)
     ].join('')
 
 }
@@ -187,8 +207,9 @@ window.onload = init
 <div id=b>
 <input id="i" autocomplete=off>
 <div id='buttons'>
-<button id="bh">HEX</button>
 <button id="bd">DEC</button>
+<button id="bh">HEX</button>
+<button id="bs">SHORT DEC</button>
 </div>
 <pre id=o>
 
