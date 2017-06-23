@@ -24,10 +24,12 @@ pre#o {
     font-size: 20pt;
     color: #9b9;
     text-shadow: #fff 0 0 3px, #fff 2px 2px 4px;
+    cursor: progress;
 }
 
 pre#o.ready {
     color: #232;
+    cursor: default;
 }
 
 input#i {
@@ -45,11 +47,9 @@ input#i {
     text-shadow: #111 0 0 3px, #111 2px 2px 4px;
 }
 
-div#buttons {
-    margin-top: 8px;
-}
 
-button#bh, button#bd, button#bs {
+div#buttons button {
+    cursor: pointer;
     padding: 8px;
     border-radius: 5px;
     border: 0;
@@ -57,6 +57,7 @@ button#bh, button#bd, button#bs {
     color: #aba;
     font-size: 20pt;
     font-weight: bold;
+    margin: 10px;
 }
 
 body.dec button#bd,
