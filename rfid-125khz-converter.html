@@ -181,21 +181,27 @@ function update(){
         decimal = 0x10000 * upper + lower
         hex = decimal.toString( 16 )
     }
-    overflow = ( decimal > 0xffffffff )
+    var overflow = ( decimal > 0xffffffff )
     decimal = decimal % 0x100000000
-    upper = ~~(decimal / 0x10000)
-    lower = decimal % 0x10000
-//    hextail = (hex).slice(-4)
+    var upper = ~~(decimal / 0x10000)
+    var lower = decimal % 0x10000
+    var mpo = ( decimal % 0x1000 )  % 10000
 
-    document.querySelector("pre#o").textContent = [
+    document.querySelector("pre#o").innerHTML = [
         "decimal: ", 
             ( '0000000000' + decimal ).slice(-10),
-            (overflow ? " OVERFLOW" : "" ), "\n",
+            (overflow ? " OVERFLOW" : "" ), 
+            "\n",
         "hex: ",
-            ( '00000000' + hex ).slice(-8), "\n",
+            ( '00000000' + hex ).slice(-8),
+            "\n",
         "short decimal: ",
             ('0' + upper ).slice(-5), " ",
-            ( '00000' + lower ).slice(-5)
+            ( '00000' + lower ).slice(-5),
+            "\n",
+        "<strong>MPO: ",
+            ('0000' + mpo ).slice(-4),
+            '</strong>'
     ].join('')
 
 }
