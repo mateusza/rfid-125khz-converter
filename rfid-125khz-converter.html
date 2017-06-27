@@ -64,7 +64,7 @@ input#i:focus {
     outline: none;
 }
 
-input#i.blank {
+input#i.blink {
     background-color: #ada;
     color: #fff;
     transition-duration: 0.1s;
@@ -79,12 +79,12 @@ function init(){
     var i = document.querySelector( "input#i" )
 
     i.addEventListener( 'keyup', function(e){
-        update( i.value )
+        update()
         if ( e.keyCode == 13 ){
             document.querySelector("audio#audiobeep").play()
             document.querySelector("input#i").value = ""
             document.querySelector("pre#o").className = "ready"
-            document.querySelector("input#i").className = "blank"
+            document.querySelector("input#i").className = "blink"
             window.setTimeout( function(){
                 document.querySelector("input#i").className = ""
             }, 90 )
@@ -104,18 +104,19 @@ function set_mode( n ){
 }
 
 function update(){
-    var val = i.value
+    var i = document.querySelector( "input#i" )
+    var o = document.querySelector( "pre#o" )
 
     if ( ! (
-        mode == 'dec' && val.match( /^[0-9]*$/ ) 
+        mode == 'dec' && i.value.match( /^[0-9]*$/ ) 
         ) ) 
     {
-        document.querySelector("input#i").value = ""
-        document.querySelector("pre#o").textContent = "ERROR"
+        i.value = ""
+        o.textContent = "ERROR"
         return
     }
 
-    document.querySelector("pre#o").className = ""
+    o.className = ""
 
     var decimal
 
@@ -130,7 +131,7 @@ function update(){
     var lower = decimal % 0x10000
     var mpo = ( decimal % 0x1000 )  % 10000
 
-    document.querySelector("pre#o").innerHTML = [
+    o.innerHTML = [
         "decimal: ", 
             ( '0000000000' + decimal ).slice(-10),
             (overflow ? " OVERFLOW" : "" ), 
