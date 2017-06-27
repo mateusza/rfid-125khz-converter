@@ -21,10 +21,14 @@ div#b {
 }
 
 pre#o {
-    font-size: 70pt;
+    font-size: 20pt;
     color: #9b9;
     text-shadow: #fff 0 0 3px, #fff 2px 2px 4px;
     cursor: progress;
+}
+
+pre#o strong {
+    font-size: 40pt;
 }
 
 pre#o.ready {
@@ -117,14 +121,26 @@ function update(){
 
     if ( mode == 'dec' ){
         decimal = parseInt( '0' + i.value );
+        hex = parseInt( '0' + i.value, 10 ).toString( 16 );
     }
 
     var overflow = ( decimal > 0xffffffff )
     decimal = decimal % 0x100000000
+    var upper = ~~(decimal / 0x10000)
+    var lower = decimal % 0x10000
     var mpo = ( decimal % 0x1000 )  % 10000
 
     document.querySelector("pre#o").innerHTML = [
+        "decimal: ", 
+            ( '0000000000' + decimal ).slice(-10),
+            (overflow ? " OVERFLOW" : "" ), 
+            "\n",
+        "hex: ",
+            ( '00000000' + hex ).slice(-8),
+            "\n",
+        "<strong>MPO: ",
             ('0000' + mpo ).slice(-4),
+            '</strong>'
     ].join('')
 
 }
