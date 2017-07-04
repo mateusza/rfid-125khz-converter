@@ -77,6 +77,7 @@ function init(){
     set_mode( 'dec' )
 
     var i = document.querySelector( "input#i" )
+    var o = document.querySelector( "pre#o" )
 
     i.addEventListener( 'keyup', function(e){
         update()
@@ -95,6 +96,9 @@ function init(){
     var b = document.querySelector( "body" )
     b.addEventListener( 'click', function(){
         i.focus()
+    })
+    o.addEventListener( 'click', function(e){
+        e.stopPropagation()
     })
 }
 
