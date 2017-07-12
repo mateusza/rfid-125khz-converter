@@ -122,11 +122,12 @@ function update(){
 
     o.className = ""
 
-    var decimal
+    var decimal = 0
 
     if ( mode == 'dec' ){
-        decimal = parseInt( '0' + i.value );
-        hex = parseInt( '0' + i.value, 10 ).toString( 16 );
+        decimal = parseInt( i.value );
+        if ( isNaN( decimal ) ) decimal = 0;
+        hex = decimal.toString( 16 );
     }
 
     var overflow = ( decimal > 0xffffffff )
