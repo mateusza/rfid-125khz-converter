@@ -134,7 +134,7 @@ function update(){
     decimal = decimal % 0x100000000
     var upper = ~~(decimal / 0x10000)
     var lower = decimal % 0x10000
-    var mpo = ( decimal % 0x1000 )  % 10000
+    var mpo = decimal % 0x2000 
 
     o.innerHTML = [
         "decimal: ", 
